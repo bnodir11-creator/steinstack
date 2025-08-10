@@ -1,144 +1,202 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Trading Game</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Advanced Discount Aggregator</title>
   <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #111;
-      color: #fff;
-      max-width: 480px;
-      margin: auto;
-      overflow: hidden;
+    :root {
+      --primary: #3498db;
+      --danger: #e74c3c;
+      --dark: #2c3e50;
+      --light: #f7f9fb;
     }
-    header, footer {
-      padding: 10px;
-      text-align: center;
-      background: #222;
-    }
-    .chart {
-      width: 100%;
-      height: 300px;
-      overflow: hidden;
-    }
-    .chart iframe {
-      width: 100%;
-      height: 100%;
-      border: none;
-    }
-    .controls, .menu {
-      display: flex;
-      justify-content: space-around;
-      margin: 10px 0;
-    }
-    .btn {
-      background: #444;
-      color: #fff;
-      padding: 10px;
-      border: none;
-      border-radius: 8px;
-      font-size: 16px;
-      flex: 1;
-      margin: 0 5px;
-    }
-    #patternGallery {
-      display: none;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 10px;
-      padding: 10px;
-    }
-    .pattern-card {
-      width: 45%;
-      background: #222;
-      border-radius: 10px;
-      overflow: hidden;
-      text-align: center;
-    }
-    .pattern-card img {
-      width: 100%;
-      display: block;
-    }
-    .pattern-card p {
-      padding: 5px;
-      font-size: 14px;
-    }
+    body { font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif; margin:0; background:var(--light); color:var(--dark); }
+    .container{max-width:1100px;margin:18px auto;padding:18px;}
+    header{background:#fff;padding:18px;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,0.06);margin-bottom:16px;}
+    h1{margin:0;color:var(--primary)}
+    .search-panel{background:#fff;border-radius:8px;padding:18px;box-shadow:0 2px 12px rgba(0,0,0,0.04);margin-bottom:16px;}
+    .form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;}
+    .form-group label{display:block;margin-bottom:6px;font-weight:600}
+    .form-control{width:100%;padding:10px;border:1px solid #ddd;border-radius:6px}
+    .btn{background:var(--primary);color:#fff;border:none;padding:10px 14px;border-radius:6px;cursor:pointer;font-weight:700}
+    .results-container{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px}
+    .deal-card{background:#fff;padding:12px;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,0.04)}
+    .deal-source{background:var(--primary);color:#fff;padding:4px 8px;border-radius:6px;font-size:12px;font-weight:700}
+    .deal-price{color:var(--primary);font-weight:800;margin-top:8px}
+    .deal-original-price{margin-left:8px;text-decoration:line-through;color:#999;font-weight:600;font-size:13px}
+    .loading{padding:20px;text-align:center;color:#666}
+    .error{background:#ffecec;color:var(--danger);padding:10px;border-radius:6px;margin:12px 0}
+    footer{margin-top:18px;text-align:center;color:#666;font-size:13px}
+    @media(max-width:600px){.form-grid{grid-template-columns:1fr}}
   </style>
 </head>
 <body>
+  <div class="container">
+    <header>
+      <h1>Advanced Discount Aggregator</h1>
+    </header>
 
-<header>
-  <h2>BTC/USDT</h2>
-</header>
+    <main>
+      <section class="search-panel">
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="country">Country</label>
+            <select id="country" class="form-control">
+              <option value="US" selected>United States</option>
+              <option value="CA">Canada</option>
+              <option value="UK">United Kingdom</option>
+            </select>
+          </div>
 
-<div class="chart">
-  <iframe src="https://s.tradingview.com/embed-widget/mini-symbol-overview/?symbol=BINANCE:BTCUSDT&locale=ru&interval=5" allowtransparency="true" scrolling="no"></iframe>
-</div>
+          <div class="form-group">
+            <label for="zip">ZIP Code</label>
+            <input type="text" id="zip" class="form-control" placeholder="Enter 5-digit ZIP" maxlength="5">
+          </div>
+        </div>
 
-<div class="controls">
-  <button class="btn">Buy</button>
-  <button class="btn">Sell</button>
-</div>
+        <div class="form-group">
+          <label>Select Stores</label>
+          <div id="store-options" style="display:flex;gap:12px;flex-wrap:wrap">
+            <label><input type="checkbox" id="amazon" checked> Amazon</label>
+            <label><input type="checkbox" id="walmart" checked> Walmart</label>
+            <label><input type="checkbox" id="target" checked> Target</label>
+            <label><input type="checkbox" id="slickdeals" checked> Slickdeals</label>
+          </div>
+        </div>
 
-<div class="menu">
-  <button class="btn" onclick="alert('Trades - заглушка')">Trades</button>
-  <button class="btn" onclick="alert('Signals - заглушка')">Signals</button>
-  <button class="btn" onclick="togglePatterns()">Patterns</button>
-  <button class="btn" onclick="alert('Market - заглушка')">Market</button>
-</div>
+        <div class="form-group">
+          <label>Select Categories</label>
+          <div id="category-options" style="display:flex;gap:12px;flex-wrap:wrap">
+            <label><input type="checkbox" id="restaurants"> Restaurants</label>
+            <label><input type="checkbox" id="entertainment"> Entertainment</label>
+            <label><input type="checkbox" id="clothing"> Clothing</label>
+          </div>
+        </div>
 
-<div id="patternGallery">
-  <div class="pattern-card">
-    <img src="https://i.imgur.com/dYIkjUz.png" alt="Head and Shoulders">
-    <p>Head and Shoulders</p>
-  </div>
-  <div class="pattern-card">
-    <img src="https://i.imgur.com/Lzp9z9n.png" alt="Double Top">
-    <p>Double Top</p>
-  </div>
-  <div class="pattern-card">
-    <img src="https://i.imgur.com/UuhbmAA.png" alt="Cup and Handle">
-    <p>Cup and Handle</p>
-  </div>
-  <div class="pattern-card">
-    <img src="https://i.imgur.com/ScOP8B8.png" alt="Bullish Flag">
-    <p>Bullish Flag</p>
-  </div>
-  <div class="pattern-card">
-    <img src="https://i.imgur.com/8oOClxg.png" alt="Bearish Flag">
-    <p>Bearish Flag</p>
-  </div>
-  <div class="pattern-card">
-    <img src="https://i.imgur.com/HkM2mUE.png" alt="Ascending Triangle">
-    <p>Ascending Triangle</p>
-  </div>
-  <div class="pattern-card">
-    <img src="https://i.imgur.com/mf29VjA.png" alt="Descending Triangle">
-    <p>Descending Triangle</p>
-  </div>
-  <div class="pattern-card">
-    <img src="https://i.imgur.com/BuLSHgL.png" alt="Symmetrical Triangle">
-    <p>Symmetrical Triangle</p>
-  </div>
-  <div class="pattern-card">
-    <img src="https://i.imgur.com/b6oMgbf.png" alt="Rising Wedge">
-    <p>Rising Wedge</p>
-  </div>
-  <div class="pattern-card">
-    <img src="https://i.imgur.com/O6iPfHl.png" alt="Falling Wedge">
-    <p>Falling Wedge</p>
-  </div>
-</div>
+        <div style="margin-top:12px">
+          <button id="search-btn" class="btn">Find Discounts</button>
+        </div>
 
-<script>
-  function togglePatterns() {
-    const gallery = document.getElementById('patternGallery');
-    gallery.style.display = gallery.style.display === 'flex' ? 'none' : 'flex';
-  }
-</script>
+        <div id="error-container" class="error" style="display:none"></div>
+        <div id="loading" class="loading" style="display:none">Searching for the best deals...</div>
+      </section>
 
+      <section id="results-section">
+        <div id="results-container" class="results-container"></div>
+      </section>
+    </main>
+
+    <footer>
+      If the page is blank — open browser DevTools (F12) → Console / Network to see details.
+    </footer>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const searchBtn = document.getElementById('search-btn');
+      const resultsContainer = document.getElementById('results-container');
+      const loadingElement = document.getElementById('loading');
+      const errorContainer = document.getElementById('error-container');
+
+      const API_URL = (location.protocol === 'file:')
+        ? 'http://localhost:8000/api/get-discounts'
+        : '/api/get-discounts';
+
+      function showError(msg) {
+        errorContainer.textContent = msg;
+        errorContainer.style.display = 'block';
+      }
+      function hideError() {
+        errorContainer.style.display = 'none';
+        errorContainer.textContent = '';
+      }
+
+      searchBtn.addEventListener('click', async function () {
+        hideError();
+        resultsContainer.innerHTML = '';
+
+        const zip = document.getElementById('zip').value.trim();
+        const country = document.getElementById('country').value;
+        const selectedStores = [];
+        document.querySelectorAll('#store-options input[type="checkbox"]:checked').forEach(cb => selectedStores.push(cb.id));
+        const selectedCategories = [];
+        document.querySelectorAll('#category-options input[type="checkbox"]:checked').forEach(cb => selectedCategories.push(cb.id));
+
+        if (!zip || !/^[0-9]{5}$/.test(zip)) {
+          showError("Please enter a valid 5-digit ZIP code");
+          return;
+        }
+        if (selectedStores.length === 0 && selectedCategories.length === 0) {
+          showError("Please select at least one store or category");
+          return;
+        }
+
+        loadingElement.style.display = 'block';
+        try {
+          const response = await fetch(API_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ country, zip, stores: selectedStores, categories: selectedCategories })
+          });
+
+          if (!response.ok) {
+            const errText = await response.text();
+            showError(errText || "Server error");
+            return;
+          }
+
+          const data = await response.json();
+          displayResults(data);
+        } catch (error) {
+          showError("Something went wrong. Please try again.");
+        } finally {
+          loadingElement.style.display = 'none';
+        }
+      });
+
+      function displayResults(data) {
+        resultsContainer.innerHTML = '';
+
+        if (data.slickdeals) {
+          data.slickdeals.forEach(deal => resultsContainer.appendChild(createDealCard(deal)));
+        }
+        if (data.store_deals) {
+          for (const store in data.store_deals) {
+            data.store_deals[store].forEach(deal => resultsContainer.appendChild(createDealCard(deal)));
+          }
+        }
+        if (data.category_deals) {
+          for (const category in data.category_deals) {
+            data.category_deals[category].forEach(deal => resultsContainer.appendChild(createDealCard(deal)));
+          }
+        }
+
+        if (resultsContainer.children.length === 0) {
+          showError("No discounts found for your search criteria");
+        }
+      }
+
+      function createDealCard(deal) {
+        const card = document.createElement('div');
+        card.className = 'deal-card';
+        card.innerHTML = `
+          <div class="deal-header">
+            <span class="deal-source">${deal.source || ''}</span>
+          </div>
+          <div class="deal-body">
+            <h3 class="deal-title">${deal.title || 'No title'}</h3>
+            ${deal.price && deal.price !== 'N/A'
+              ? `<div class="deal-price">${deal.price}${deal.original_price && deal.original_price !== 'N/A' ? `<span class="deal-original-price">${deal.original_price}</span>` : ''}</div>`
+              : `<div class="deal-price" style="color:gray;font-size:14px;">No price info</div>`}
+          </div>
+          <div class="deal-footer">
+            <a href="${deal.link || '#'}" target="_blank" class="deal-link">View Deal</a>
+          </div>
+        `;
+        return card;
+      }
+    });
+  </script>
 </body>
 </html>
