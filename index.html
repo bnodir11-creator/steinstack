@@ -134,11 +134,16 @@
 
         loadingElement.style.display = 'block';
         try {
-          const response = await fetch(API_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ country, zip, stores: selectedStores, categories: selectedCategories })
-          });
+         const params = new URLSearchParams({
+         country: country,
+         zip: zip,
+         stores: selectedStores.join(','),
+         categories: selectedCategories.join(',')
+});
+
+const response = await fetch(`${API_URL}?${params.toString()}`, {
+  method: 'GET'
+});
 
           if (!response.ok) {
             const errText = await response.text();
@@ -200,3 +205,4 @@
   </script>
 </body>
 </html>
+
