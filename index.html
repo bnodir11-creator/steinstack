@@ -99,7 +99,7 @@
       const loadingElement = document.getElementById('loading');
       const errorContainer = document.getElementById('error-container');
 
-      const API_URL = 'https://discount-api-8h3p.onrender.com';
+      const API_URL = 'https://discount-api-8h3p.onrender.com/api/get-discounts';
 
       function showError(msg) {
         errorContainer.textContent = msg;
@@ -203,5 +203,6 @@ const response = await fetch(`${API_URL}?${params.toString()}`, {
   </script>
 </body>
 </html>
+
 
 
