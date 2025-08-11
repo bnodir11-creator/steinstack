@@ -139,8 +139,17 @@
          categories: selectedCategories.join(',')
 });
 
-const response = await fetch(`${API_URL}?${params.toString()}`, {
-  method: 'GET'
+    const response = await fetch(API_URL, {
+        method: 'POST',
+        headers: {
+       'Content-Type': 'application/json',
+  },
+        body: JSON.stringify({
+        country: country,
+        zip: zip,
+        stores: selectedStores,
+        categories: selectedCategories
+  })
 });
 
           if (!response.ok) {
@@ -203,6 +212,7 @@ const response = await fetch(`${API_URL}?${params.toString()}`, {
   </script>
 </body>
 </html>
+
 
 
 
